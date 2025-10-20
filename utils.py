@@ -68,3 +68,5 @@ def compute_power_law_exponent(
         save_plot_path.parent.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
         plt.savefig(save_plot_path)
         plt.show()
+
+    return alpha, r_squared, intercept
