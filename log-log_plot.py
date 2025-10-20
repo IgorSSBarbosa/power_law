@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from scipy.stats import linregress, norm
 from scipy.optimize import curve_fit
+from utils import compute_power_law_exponent
 class LoglogPlotter():
     def __init__(self,args):
         self.simulation = args["data_path"]
@@ -37,65 +38,6 @@ class LoglogPlotter():
             help="If set, plot the Richardson cancelation heatmap",
         )
 
-    def compute_power_law_exponent(self, dom , X_n, plot=True, confidence_interval=False):
-        """
-        Compute the power law exponent (α) and R² from a power-law relationship X_n ~ n^α.
-        
-        Parameters:
-        -----------
-        n : array_like
-            Array of system sizes (e.g., simulation sizes).
-        X_n : array_like
-            Array of measured values (should follow X_n ~ n^α + a_0).
-        plot : bool, optional
-            If True, generates a log-log plot (default: True).
-        confidence_interval : bool, optional
-            If True, prints confidence intervals, over mean points
-        
-        Returns:
-        --------
-        alpha : float
-            The power law exponent (slope of log(X_n) vs log(n)).
-        r_squared : float
-            The R-squared value of the linear fit.
-        a_0 : float
-            The intercept of the linear fit in log-log space.
-        """
-        # Convert inputs to numpy arrays
-        # n = np.asarray(n)
-        X_n = np.asarray(X_n)
-        
-        # Linear regression in log space
-        log_n = np.emath.logn(self.rho,dom)
-        log_X_n = np.emath.logn(self.rho,X_n)
-        slope, intercept, r_value, _, _ = linregress(log_n, log_X_n)
-        alpha = slope
-        r_squared = r_value ** 2
-
-        # Plotting
-        if plot:
-            fig,ax = plt.subplots(figsize=(8, 6))
-            # plot data and fit
-            ax.plot(dom, X_n, color='#004A87', marker='o', label='Data')
-            ax.plot(dom, np.pow(self.rho,intercept) * (dom ** slope), 'r--', 
-                    label=f'Fit: $X_L \\sim L^{{{alpha:.4f}}}$\n$R² = {r_squared:.4f}$') 
-            ax.set_xscale('log', base=self.basex)
-            ax.set_yscale('log', base=self.basey)
-
-            ax.set_xlabel('$L$ (log scale)')
-            ax.set_ylabel('$X_L$ (log scale)')
-            ax.set(title=f'Log-Log plot of {self.simulation}')
-            ax.legend()
-
-            ax.grid()
-            ax.grid(which='minor', color="0.9")
-            save_plot_path = Path(f'images/log-log_plots/{self.model}/plot_{self.simulation}.png')
-            save_plot_path.parent.mkdir(parents=True, exist_ok=True)  # Create directory if it doesn't exist
-            plt.savefig(save_plot_path)
-            plt.show()
-
-
-        return alpha, r_squared, intercept
     def Richardson_step(self,dom,X_n,j):
         R = []
         J = len(X_n) -1 
@@ -279,7 +221,7 @@ class LoglogPlotter():
         X_n = np.mean(data, axis=1)
         var = np.var(data, axis=1, ddof=1)
 
-        alpha, r_squared, a_0 = self.compute_power_law_exponent(dom, X_n, plot=True)
+        alpha, r_squared, a_0 = compute_power_law_exponent(dom, X_n, plot=True)
         print(f'alpha = {alpha}')
         print(f'r² = {r_squared}')
 
