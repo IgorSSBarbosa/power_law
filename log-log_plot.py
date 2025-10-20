@@ -222,7 +222,16 @@ class LoglogPlotter():
         X_n = np.mean(data, axis=1)
         var = np.var(data, axis=1, ddof=1)
 
-        alpha, r_squared, a_0 = compute_power_law_exponent(dom, X_n, plot=True)
+        alpha, r_squared, a_0 = compute_power_law_exponent(
+            dom, 
+            X_n, 
+            plot=True, 
+            rho=self.rho, 
+            basex=self.basex, 
+            basey=self.basey, 
+            simulation=self.simulation, 
+            model=self.model
+        )
         print(f'alpha = {alpha}')
         print(f'r² = {r_squared}')
 
