@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 from scipy.stats import linregress, norm
 from scipy.optimize import curve_fit
-from utils import compute_mean_variance
 class LoglogPlotter():
     def __init__(self,args):
         self.simulation = args["data_path"]
@@ -277,7 +276,9 @@ class LoglogPlotter():
         self.model = json_file['model']
 
         # The variance will be used to compute confidence intervals 
-        X_n, var = compute_mean_variance(data)
+        X_n = np.mean(data, axis=1)
+        var = np.var(data, axis=1, ddof=1)
+
         alpha, r_squared, a_0 = self.compute_power_law_exponent(dom, X_n, plot=True)
         print(f'alpha = {alpha}')
         print(f'r² = {r_squared}')
