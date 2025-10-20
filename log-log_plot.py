@@ -7,6 +7,7 @@ import numpy as np
 from scipy.stats import linregress, norm
 from scipy.optimize import curve_fit
 from utils import compute_power_law_exponent
+
 class LoglogPlotter():
     def __init__(self,args):
         self.simulation = args["data_path"]
